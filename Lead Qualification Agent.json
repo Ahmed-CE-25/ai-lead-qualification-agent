@@ -1,0 +1,399 @@
+{
+  "name": "Lead Qualification Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Contact Us",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name "
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Inquiry"
+            },
+            {
+              "fieldLabel": "Company"
+            },
+            {
+              "fieldLabel": "Budget Range",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Under $1k"
+                  },
+                  {
+                    "option": "$1k-$5k"
+                  },
+                  {
+                    "option": "$5k+"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "f985db68-31b1-4a13-ad07-850551078ea6",
+      "name": "On form submission",
+      "webhookId": "a24a8832-f5a0-4e4a-86fe-8e3d12d72cc0"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1xz7VF3rEHZen_ozYZ2XjZaQsn50CrudPovCpmISB1fg/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xz7VF3rEHZen_ozYZ2XjZaQsn50CrudPovCpmISB1fg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['Name '] }}",
+            "Email": "={{ $json.Email }}",
+            "Priority ": "={{ $json.Priority }}",
+            "Score": "={{ $json.Score }}",
+            "Reasoning": "={{ $json.Suggested_reply }}",
+            "Suggested Reply": "={{ $json.Suggested_reply }}",
+            "Company": "={{ $('On form submission').item.json.Company }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority ",
+              "displayName": "Priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reasoning",
+              "displayName": "Reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested Reply",
+              "displayName": "Suggested Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        0
+      ],
+      "id": "d70bcded-fa17-4dc0-ba27-4b7cd09beb5a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0GvuICESG2y9sdub",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "ahmed.f1867@gmail.com",
+        "subject": "=🔥 Hot Lead: {{ $('Edit Fields').item.json.Name }}",
+        "message": "=New hot lead from {{ $('Edit Fields').item.json.Name }} ({{ $('On form submission').item.json.Company }})<br><br>\nScore: {{ $('Edit Fields').item.json.Score }}/10<br>\nReasoning: {{ $('Edit Fields').item.json.Reasoning }}<br><br>\nSuggested reply:<br>\n{{ $('Edit Fields').item.json.Suggested_reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "3d45765b-799d-44ac-8058-51e4e13b690d",
+      "name": "Send a message",
+      "webhookId": "4045be0e-e3e1-46fb-b0d1-bc10948fb450",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UrEX7mMUXbuR3VxL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a sales lead qualification assistant. Analyze this inquiry and respond ONLY with valid JSON, no other text, no markdown formatting, no code blocks — just the raw JSON object, in exactly this format:\n\n{\n  \"score\": <number 1-10, where 10 is a highly qualified, ready-to-buy lead>,\n  \"priority\": \"<hot, warm, or cold>\",\n  \"reasoning\": \"<one sentence explaining the score>\",\n  \"suggested_reply\": \"<a warm, professional 2-3 sentence email reply to this lead, personalized using their name and inquiry>\"\n}\n\nLead details:\nName: {{ $json.Name }}\nCompany: {{ $json.Company }}\nBudget: {{ $json['Budget Range'] }}\nInquiry: {{ $json.Inquiry }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        0
+      ],
+      "id": "937dd6a4-5dd2-491c-ad18-b5c837e3d2ba",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JelLqx38SMdXJylo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bc7964a7-5297-49ff-8cf6-20ce8360826e",
+              "name": "Name",
+              "value": "={{ $('On form submission').item.json['Name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "8fd756ba-1e46-49d6-8823-c3d4c8718cac",
+              "name": "Email",
+              "value": "={{ $('On form submission').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "7704f7a1-4047-4997-a5e0-5d0a1464b68c",
+              "name": "company",
+              "value": "={{ $('On form submission').item.json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "b54423c6-5a70-463f-9687-d33750a6124d",
+              "name": "=Score",
+              "value": "={{ JSON.parse($json.content.parts[0].text.replace(/```json|```/g, '')).score }}",
+              "type": "string"
+            },
+            {
+              "id": "98c2da52-2e09-425e-a56b-4c7fdf038dbe",
+              "name": "=Priority",
+              "value": "={{ JSON.parse($json.content.parts[0].text.replace(/```json|```/g, '')).priority }}",
+              "type": "string"
+            },
+            {
+              "id": "85e972d8-de3f-4993-b908-4f793cc8f289",
+              "name": "=Reasoning",
+              "value": "={{ JSON.parse($json.content.parts[0].text.replace(/```json|```/g, '')).reasoning }}",
+              "type": "string"
+            },
+            {
+              "id": "42603796-bd71-4ec3-a362-86a9708ecb60",
+              "name": "=Suggested_reply",
+              "value": "={{ JSON.parse($json.content.parts[0].text.replace(/```json|```/g, '')).suggested_reply }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        0
+      ],
+      "id": "0efe7db1-5c41-445c-89ad-d23ece250aae",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23dd6c44-450d-4978-b6be-e604c2f03647",
+              "leftValue": "={{ $json.Priority.toLowerCase() }}",
+              "rightValue": "hot",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        0
+      ],
+      "id": "96d16671-7d3f-4e85-a445-3a823c7dc336",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2fe4dee2-dbb2-4e14-9c23-be6dd0a6f5dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "500990defd42af065205946b97a025372b2dea6a31d6ec63afba0a71260c6067"
+  },
+  "nodeGroups": [],
+  "id": "2bjjaifDite2HK4s",
+  "tags": []
+}
